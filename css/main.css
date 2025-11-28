@@ -20,7 +20,7 @@
     --bg-white: #ffffff;
     --bg-header: #f5f5f5;
     --border-color: #e0e0e0;
-    --announcement-bg: #1a1a1a;
+    --announcement-bg: #2d2d2d;
     --max-width: 1200px;
     --header-height: 90px;
     --announcement-height: 40px;
@@ -867,10 +867,6 @@ h3 {
     padding-top: calc(var(--header-height) + var(--announcement-height) + 4rem);
     text-align: center;
     position: relative;
-    background-size: cover !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-    background-attachment: scroll;
     min-height: 550px;
     display: flex;
     align-items: center;
@@ -879,6 +875,10 @@ h3 {
 
 /* Ensure inline background-image styles are preserved and not overridden */
 .page-header[style*="background-image"] {
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: scroll !important;
     background-color: transparent !important;
 }
 

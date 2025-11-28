@@ -1,37 +1,83 @@
 // Main JavaScript for HipHopHouse.com
 
+// Simple test log
+console.log('main.js loaded');
+
 // Load header and footer components
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded - Initializing...');
     loadHeader();
     loadFooter();
     initMobileMenu();
+    // Check immediately and after delays
+    checkPageHeaderImages();
+    setTimeout(checkPageHeaderImages, 100);
+    setTimeout(checkPageHeaderImages, 500);
+    setTimeout(checkPageHeaderImages, 1000);
+});
+
+// Also run on window load as backup
+window.addEventListener('load', function() {
+    console.log('Window loaded - checking page headers again');
     checkPageHeaderImages();
 });
 
 // Debug function to check page header background images
 function checkPageHeaderImages() {
+    console.log('=== Checking Page Header Images ===');
     const pageHeaders = document.querySelectorAll('.page-header');
+    console.log('Found page-header elements:', pageHeaders.length);
+    
+    if (pageHeaders.length === 0) {
+        console.warn('No .page-header elements found!');
+        return;
+    }
+    
     pageHeaders.forEach((header, index) => {
         const bgImage = window.getComputedStyle(header).backgroundImage;
         const inlineStyle = header.getAttribute('style');
-        console.log(`Page Header ${index}:`, {
-            computedBackgroundImage: bgImage,
-            inlineStyle: inlineStyle,
-            hasBackgroundImage: bgImage !== 'none' && bgImage !== '',
-            element: header
-        });
+        const allStyles = window.getComputedStyle(header);
         
-        // If inline style exists but computed style doesn't show it, force it
-        if (inlineStyle && inlineStyle.includes('background-image') && (bgImage === 'none' || bgImage === '')) {
-            console.warn('Background image not applied, attempting to fix:', header);
-            // Extract the URL from inline style
+        console.log(`\n--- Page Header ${index} ---`);
+        console.log('Computed background-image:', bgImage);
+        console.log('Inline style attribute:', inlineStyle);
+        console.log('Background color:', allStyles.backgroundColor);
+        console.log('Background size:', allStyles.backgroundSize);
+        console.log('Has background image:', bgImage !== 'none' && bgImage !== '');
+        console.log('Element:', header);
+        
+        // If inline style exists, always apply it to ensure it works
+        if (inlineStyle && inlineStyle.includes('background-image')) {
             const urlMatch = inlineStyle.match(/url\(['"]?([^'"]+)['"]?\)/);
             if (urlMatch) {
-                header.style.setProperty('background-image', `url(${urlMatch[1]})`, 'important');
-                console.log('Fixed background image:', urlMatch[1]);
+                const imageUrl = urlMatch[1];
+                console.log('Found image URL in inline style:', imageUrl);
+                
+                // Always apply the background image to ensure it's set
+                console.log('Applying background image fix...');
+                header.style.setProperty('background-image', `url(${imageUrl})`, 'important');
+                header.style.setProperty('background-size', 'cover', 'important');
+                header.style.setProperty('background-position', 'center', 'important');
+                header.style.setProperty('background-repeat', 'no-repeat', 'important');
+                header.style.setProperty('background-color', 'transparent', 'important');
+                
+                // Force a reflow
+                void header.offsetHeight;
+                
+                // Verify it was applied
+                const newBgImage = window.getComputedStyle(header).backgroundImage;
+                console.log('After fix - background-image:', newBgImage);
+                if (newBgImage.includes(imageUrl) || (newBgImage !== 'none' && newBgImage !== '')) {
+                    console.log('✅ Successfully applied background image!');
+                } else {
+                    console.error('❌ Failed to apply background image. Computed value:', newBgImage);
+                }
             }
+        } else {
+            console.warn('No background-image found in inline style');
         }
     });
+    console.log('=== End Page Header Check ===\n');
 }
 
 // Load header component
@@ -137,7 +183,7 @@ function initMobileMenu() {
 function getDefaultHeader() {
     return `
         <div class="announcement-bar">
-            <p>Celebrating <span class="highlight">15 years</span></p>
+            <p>Celebrating <span class="highlight">15 years</span> - Thank you for your confidence and trust</p>
         </div>
         <header class="site-header">
             <div class="header-container">
