@@ -36,7 +36,27 @@ window.addEventListener('load', function() {
     checkAnnouncementBar();
     setTimeout(checkPageHeaderImages, 500);
     setTimeout(checkAnnouncementBar, 500);
+    initStickyHeader();
 });
+
+// Initialize sticky header scroll effect
+let stickyHeaderInitialized = false;
+function initStickyHeader() {
+    const header = document.querySelector('.site-header');
+    if (!header || stickyHeaderInitialized) return;
+    
+    stickyHeaderInitialized = true;
+    
+    window.addEventListener('scroll', function() {
+        const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (currentScroll > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    }, { passive: true });
+}
 
 // Load header component
 function loadHeader() {
@@ -74,6 +94,7 @@ function loadHeader() {
             
             setActiveNavigation(path, isClassesPage);
             initMobileMenu();
+            initStickyHeader();
         })
         .catch(error => {
             console.error('Error loading header:', error);
@@ -83,6 +104,7 @@ function loadHeader() {
                 checkAnnouncementBar();
             }, 100);
             setActiveNavigation(path, isClassesPage);
+            initStickyHeader();
         });
 }
 
