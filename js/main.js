@@ -88,7 +88,7 @@ function loadHeader() {
     // Determine correct path for header component
     const headerPath = isClassesPage ? '../components/header.html' : 'components/header.html';
     
-    fetch(headerPath + '?v=' + Date.now())
+    fetch(headerPath + '?v=' + new Date().getTime() + '&nocache=' + Math.random())
         .then(response => response.text())
         .then(data => {
             document.getElementById('header-placeholder').innerHTML = data;
@@ -183,7 +183,7 @@ function initMobileMenu() {
 function getDefaultHeader() {
     return `
         <div class="announcement-bar">
-            <p>Thank you for your confidence and trust - Celebrating <span class="highlight">15 years</span></p>
+            <p>Thank you for your confidence and trust. Celebrating <span class="highlight">15 years</span></p>
         </div>
         <header class="site-header">
             <div class="header-container">
