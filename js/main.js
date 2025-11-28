@@ -183,7 +183,7 @@ function initMobileMenu() {
 function getDefaultHeader() {
     return `
         <div class="announcement-bar">
-            <p>Celebrating <span class="highlight">15 years</span> - Thank you for your confidence and trust in us</p>
+            <p>Thank you for your confidence and trust - Celebrating <span class="highlight">15 years</span></p>
         </div>
         <header class="site-header">
             <div class="header-container">
