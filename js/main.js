@@ -88,7 +88,7 @@ function loadHeader() {
     // Determine correct path for header component
     const headerPath = isClassesPage ? '../components/header.html' : 'components/header.html';
     
-    fetch(headerPath)
+    fetch(headerPath + '?v=' + Date.now())
         .then(response => response.text())
         .then(data => {
             document.getElementById('header-placeholder').innerHTML = data;
@@ -111,7 +111,7 @@ function loadFooter() {
     // Determine correct path for footer component
     const footerPath = isClassesPage ? '../components/footer.html' : 'components/footer.html';
     
-    fetch(footerPath)
+    fetch(footerPath + '?v=' + Date.now())
         .then(response => response.text())
         .then(data => {
             document.getElementById('footer-placeholder').innerHTML = data;
