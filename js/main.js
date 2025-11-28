@@ -110,7 +110,7 @@ function initMobileMenu() {
 function getDefaultHeader() {
     return `
         <div class="announcement-bar">
-            <p>Welcome to HipHop House - <span class="highlight">Established Dance School</span></p>
+            <p>Celebrating <span class="highlight">15 years</span></p>
         </div>
         <header class="site-header">
             <div class="header-container">
