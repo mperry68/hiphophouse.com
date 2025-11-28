@@ -1,104 +1,71 @@
 // Main JavaScript for HipHopHouse.com
 
-// Simple test log
-console.log('main.js loaded');
+console.log('=== MAIN.JS LOADED ===');
+console.log('Current URL:', window.location.href);
+console.log('Current Path:', window.location.pathname);
 
 // Load header and footer components
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM Content Loaded - Initializing...');
+    console.log('=== DOM CONTENT LOADED ===');
     loadHeader();
     loadFooter();
     initMobileMenu();
-    // Check immediately and after delays
     checkPageHeaderImages();
-    setTimeout(checkPageHeaderImages, 100);
-    setTimeout(checkPageHeaderImages, 500);
-    setTimeout(checkPageHeaderImages, 1000);
 });
 
-// Also run on window load as backup
+// Check page header images after everything loads
 window.addEventListener('load', function() {
-    console.log('Window loaded - checking page headers again');
+    console.log('=== WINDOW LOADED ===');
     checkPageHeaderImages();
+    checkAnnouncementBar();
+    setTimeout(checkPageHeaderImages, 500);
+    setTimeout(checkAnnouncementBar, 500);
 });
-
-// Debug function to check page header background images
-function checkPageHeaderImages() {
-    console.log('=== Checking Page Header Images ===');
-    const pageHeaders = document.querySelectorAll('.page-header');
-    console.log('Found page-header elements:', pageHeaders.length);
-    
-    if (pageHeaders.length === 0) {
-        console.warn('No .page-header elements found!');
-        return;
-    }
-    
-    pageHeaders.forEach((header, index) => {
-        const bgImage = window.getComputedStyle(header).backgroundImage;
-        const inlineStyle = header.getAttribute('style');
-        const allStyles = window.getComputedStyle(header);
-        
-        console.log(`\n--- Page Header ${index} ---`);
-        console.log('Computed background-image:', bgImage);
-        console.log('Inline style attribute:', inlineStyle);
-        console.log('Background color:', allStyles.backgroundColor);
-        console.log('Background size:', allStyles.backgroundSize);
-        console.log('Has background image:', bgImage !== 'none' && bgImage !== '');
-        console.log('Element:', header);
-        
-        // If inline style exists, always apply it to ensure it works
-        if (inlineStyle && inlineStyle.includes('background-image')) {
-            const urlMatch = inlineStyle.match(/url\(['"]?([^'"]+)['"]?\)/);
-            if (urlMatch) {
-                const imageUrl = urlMatch[1];
-                console.log('Found image URL in inline style:', imageUrl);
-                
-                // Always apply the background image to ensure it's set
-                console.log('Applying background image fix...');
-                header.style.setProperty('background-image', `url(${imageUrl})`, 'important');
-                header.style.setProperty('background-size', 'cover', 'important');
-                header.style.setProperty('background-position', 'center', 'important');
-                header.style.setProperty('background-repeat', 'no-repeat', 'important');
-                header.style.setProperty('background-color', 'transparent', 'important');
-                
-                // Force a reflow
-                void header.offsetHeight;
-                
-                // Verify it was applied
-                const newBgImage = window.getComputedStyle(header).backgroundImage;
-                console.log('After fix - background-image:', newBgImage);
-                if (newBgImage.includes(imageUrl) || (newBgImage !== 'none' && newBgImage !== '')) {
-                    console.log('✅ Successfully applied background image!');
-                } else {
-                    console.error('❌ Failed to apply background image. Computed value:', newBgImage);
-                }
-            }
-        } else {
-            console.warn('No background-image found in inline style');
-        }
-    });
-    console.log('=== End Page Header Check ===\n');
-}
 
 // Load header component
 function loadHeader() {
+    console.log('=== LOADING HEADER ===');
     const path = window.location.pathname;
     const isClassesPage = path.includes('/classes/');
-    
-    // Determine correct path for header component
     const headerPath = isClassesPage ? '../components/header.html' : 'components/header.html';
     
-    fetch(headerPath + '?v=' + new Date().getTime() + '&nocache=' + Math.random())
-        .then(response => response.text())
+    console.log('Header path:', headerPath);
+    console.log('Is classes page:', isClassesPage);
+    
+    fetch(headerPath)
+        .then(response => {
+            console.log('Header fetch response status:', response.status);
+            return response.text();
+        })
         .then(data => {
+            console.log('Header HTML received, length:', data.length);
+            console.log('Header HTML preview:', data.substring(0, 200));
+            
+            // Check for announcement bar in the data
+            if (data.includes('announcement-bar')) {
+                const announcementMatch = data.match(/<p>([^<]+)<\/p>/);
+                if (announcementMatch) {
+                    console.log('Announcement bar text found in HTML:', announcementMatch[1]);
+                }
+            }
+            
             document.getElementById('header-placeholder').innerHTML = data;
+            
+            // Check announcement bar after insertion
+            setTimeout(() => {
+                checkAnnouncementBar();
+            }, 100);
+            
             setActiveNavigation(path, isClassesPage);
-            initMobileMenu(); // Reinitialize after header loads
+            initMobileMenu();
         })
         .catch(error => {
             console.error('Error loading header:', error);
-            // Fallback header if component fails to load
+            console.log('Using fallback header');
             document.getElementById('header-placeholder').innerHTML = getDefaultHeader();
+            setTimeout(() => {
+                checkAnnouncementBar();
+            }, 100);
             setActiveNavigation(path, isClassesPage);
         });
 }
@@ -107,18 +74,15 @@ function loadHeader() {
 function loadFooter() {
     const path = window.location.pathname;
     const isClassesPage = path.includes('/classes/');
-    
-    // Determine correct path for footer component
     const footerPath = isClassesPage ? '../components/footer.html' : 'components/footer.html';
     
-    fetch(footerPath + '?v=' + Date.now())
+    fetch(footerPath)
         .then(response => response.text())
         .then(data => {
             document.getElementById('footer-placeholder').innerHTML = data;
         })
         .catch(error => {
             console.error('Error loading footer:', error);
-            // Fallback footer if component fails to load
             document.getElementById('footer-placeholder').innerHTML = getDefaultFooter();
         });
 }
@@ -140,40 +104,37 @@ function setActiveNavigation(path, isClassesPage) {
     });
 }
 
-
 // Initialize mobile menu toggle
 function initMobileMenu() {
     const menuToggle = document.querySelector('.mobile-menu-toggle');
     const mainNav = document.querySelector('.main-nav');
     
     if (menuToggle && mainNav) {
-        menuToggle.addEventListener('click', function() {
-            mainNav.classList.toggle('active');
-            // Toggle hamburger icon
-            const icon = menuToggle.querySelector('i') || menuToggle;
-            if (mainNav.classList.contains('active')) {
-                icon.textContent = '✕';
-            } else {
-                icon.textContent = '☰';
-            }
+        // Remove existing listeners by cloning
+        const newToggle = menuToggle.cloneNode(true);
+        menuToggle.parentNode.replaceChild(newToggle, menuToggle);
+        const newNav = mainNav.cloneNode(true);
+        mainNav.parentNode.replaceChild(newNav, mainNav);
+        
+        const toggle = newToggle;
+        const nav = newNav;
+        
+        toggle.addEventListener('click', function() {
+            nav.classList.toggle('active');
+            toggle.textContent = nav.classList.contains('active') ? '✕' : '☰';
         });
 
-        // Close menu when clicking on a link
-        const navLinks = mainNav.querySelectorAll('a');
-        navLinks.forEach(link => {
+        nav.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', function() {
-                mainNav.classList.remove('active');
-                const icon = menuToggle.querySelector('i') || menuToggle;
-                icon.textContent = '☰';
+                nav.classList.remove('active');
+                toggle.textContent = '☰';
             });
         });
 
-        // Close menu when clicking outside
         document.addEventListener('click', function(event) {
-            if (!mainNav.contains(event.target) && !menuToggle.contains(event.target)) {
-                mainNav.classList.remove('active');
-                const icon = menuToggle.querySelector('i') || menuToggle;
-                icon.textContent = '☰';
+            if (!nav.contains(event.target) && !toggle.contains(event.target)) {
+                nav.classList.remove('active');
+                toggle.textContent = '☰';
             }
         });
     }
@@ -193,7 +154,7 @@ function getDefaultHeader() {
                 <button class="mobile-menu-toggle">☰</button>
                 <nav>
                     <ul class="main-nav">
-                        <li><a href="/" class="active">Home</a></li>
+                        <li><a href="/">Home</a></li>
                         <li><a href="/about.html">About Us</a></li>
                         <li><a href="/classes.html" class="has-dropdown">Dance Classes</a></li>
                         <li><a href="/schedule.html">Schedule</a></li>
@@ -204,6 +165,118 @@ function getDefaultHeader() {
             </div>
         </header>
     `;
+}
+
+// Check announcement bar
+function checkAnnouncementBar() {
+    console.log('=== CHECKING ANNOUNCEMENT BAR ===');
+    const announcementBar = document.querySelector('.announcement-bar');
+    
+    if (!announcementBar) {
+        console.error('❌ Announcement bar element NOT FOUND!');
+        return;
+    }
+    
+    console.log('✅ Announcement bar element found');
+    
+    // Check text content
+    const text = announcementBar.textContent || announcementBar.innerText;
+    console.log('Announcement bar text:', text);
+    
+    // Check HTML content
+    const html = announcementBar.innerHTML;
+    console.log('Announcement bar HTML:', html);
+    
+    // Check computed styles
+    const styles = window.getComputedStyle(announcementBar);
+    console.log('Background color (computed):', styles.backgroundColor);
+    console.log('Background color (CSS variable):', getComputedStyle(document.documentElement).getPropertyValue('--announcement-bg'));
+    console.log('Color:', styles.color);
+    console.log('All computed styles:', {
+        backgroundColor: styles.backgroundColor,
+        color: styles.color,
+        padding: styles.padding,
+        fontSize: styles.fontSize
+    });
+    
+    // Check if CSS variable is set
+    const rootStyles = getComputedStyle(document.documentElement);
+    const announcementBg = rootStyles.getPropertyValue('--announcement-bg').trim();
+    console.log('CSS Variable --announcement-bg value:', announcementBg);
+    
+    // Check inline styles
+    const inlineStyle = announcementBar.getAttribute('style');
+    console.log('Inline style attribute:', inlineStyle || 'none');
+}
+
+// Check page header images
+function checkPageHeaderImages() {
+    console.log('=== CHECKING PAGE HEADER IMAGES ===');
+    const pageHeaders = document.querySelectorAll('.page-header');
+    console.log('Found .page-header elements:', pageHeaders.length);
+    
+    if (pageHeaders.length === 0) {
+        console.warn('⚠️ No .page-header elements found');
+        return;
+    }
+    
+    pageHeaders.forEach((header, index) => {
+        console.log(`\n--- Page Header ${index + 1} ---`);
+        
+        // Check inline style
+        const inlineStyle = header.getAttribute('style');
+        console.log('Inline style attribute:', inlineStyle || 'NONE');
+        
+        // Check computed styles
+        const computed = window.getComputedStyle(header);
+        const bgImage = computed.backgroundImage;
+        const bgSize = computed.backgroundSize;
+        const bgPosition = computed.backgroundPosition;
+        const bgRepeat = computed.backgroundRepeat;
+        const bgColor = computed.backgroundColor;
+        
+        console.log('Computed background-image:', bgImage);
+        console.log('Computed background-size:', bgSize);
+        console.log('Computed background-position:', bgPosition);
+        console.log('Computed background-repeat:', bgRepeat);
+        console.log('Computed background-color:', bgColor);
+        console.log('Has background image:', bgImage !== 'none' && bgImage !== '');
+        
+        // If inline style has background-image, extract URL
+        if (inlineStyle && inlineStyle.includes('background-image')) {
+            const urlMatch = inlineStyle.match(/url\(['"]?([^'"]+)['"]?\)/);
+            if (urlMatch) {
+                const imageUrl = urlMatch[1];
+                console.log('✅ Found image URL in inline style:', imageUrl);
+                
+                // Check if image is actually applied
+                if (bgImage.includes(imageUrl) || (bgImage !== 'none' && bgImage !== '')) {
+                    console.log('✅ Background image IS applied');
+                } else {
+                    console.error('❌ Background image NOT applied! Computed:', bgImage);
+                    console.log('Attempting to force apply...');
+                    
+                    // Force apply
+                    header.style.backgroundImage = `url(${imageUrl})`;
+                    header.style.backgroundSize = 'cover';
+                    header.style.backgroundPosition = 'center';
+                    header.style.backgroundRepeat = 'no-repeat';
+                    
+                    // Check again
+                    const newComputed = window.getComputedStyle(header);
+                    console.log('After force - background-image:', newComputed.backgroundImage);
+                }
+            }
+        } else {
+            console.warn('⚠️ No background-image in inline style');
+        }
+        
+        // Check element visibility
+        console.log('Element visible:', header.offsetWidth > 0 && header.offsetHeight > 0);
+        console.log('Element dimensions:', header.offsetWidth, 'x', header.offsetHeight);
+    });
+    
+    console.log('=== END PAGE HEADER CHECK ===\n');
 }
 
 // Default footer fallback
@@ -251,4 +324,3 @@ function getDefaultFooter() {
         </footer>
     `;
 }
-

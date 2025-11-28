@@ -455,7 +455,7 @@ h3 {
         padding-top: calc(var(--header-height) + var(--announcement-height) + 3rem);
         margin-bottom: 2rem;
         min-height: 400px;
-        background-color: transparent !important;
+        background-color: transparent;
     }
     
     .page-header h1 {
@@ -871,27 +871,20 @@ h3 {
     display: flex;
     align-items: center;
     width: 100%;
-}
-
-/* Ensure inline background-image styles are preserved and not overridden */
-.page-header[style*="background-image"] {
-    background-size: cover !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-    background-attachment: scroll !important;
-    background-color: transparent !important;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .page-header::before {
     content: '';
     position: absolute;
-    top: calc(-1 * (var(--header-height) + var(--announcement-height)));
+    top: 0;
     left: 0;
     right: 0;
-    height: calc(100% + var(--header-height) + var(--announcement-height));
+    bottom: 0;
     background: linear-gradient(135deg, rgba(44, 44, 44, 0.75), rgba(44, 44, 44, 0.6));
     z-index: 1;
-    pointer-events: none;
 }
 
 .page-header .content-container {
@@ -986,7 +979,7 @@ h3 {
         padding-top: calc(var(--header-height) + var(--announcement-height) + 2rem);
         margin-bottom: 1.5rem;
         min-height: 350px;
-        background-color: transparent !important;
+        background-color: transparent;
     }
     
     .page-header h1 {
