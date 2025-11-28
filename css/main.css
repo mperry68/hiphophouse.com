@@ -364,7 +364,7 @@ h3 {
     
     /* Hero Section Mobile */
     .hero-section {
-        min-height: 350px;
+        min-height: 450px;
         margin-bottom: 2rem;
     }
     
@@ -507,7 +507,7 @@ h3 {
 /* Hero Section */
 .hero-section {
     position: relative;
-    min-height: 500px;
+    min-height: 650px;
     display: flex;
     align-items: center;
     background: linear-gradient(135deg, rgba(44, 44, 44, 0.8), rgba(44, 44, 44, 0.6)), var(--bg-light);
@@ -948,7 +948,7 @@ h3 {
     
     /* Hero Section Small Mobile */
     .hero-section {
-        min-height: 300px;
+        min-height: 400px;
         margin-bottom: 1.5rem;
     }
     
