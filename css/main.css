@@ -168,6 +168,11 @@ body {
     width: 100%;
 }
 
+/* Don't show underline on dropdown parent when dropdown is visible */
+.main-nav .dropdown:hover > a::after {
+    width: 0;
+}
+
 /* Dropdown indicator */
 .main-nav .has-dropdown::after {
     content: '▼';
@@ -187,24 +192,34 @@ body {
 
 .main-nav .dropdown-menu {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 0.5rem);
     left: 0;
     background-color: var(--bg-white);
-    min-width: 200px;
+    min-width: 220px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     border-radius: 4px;
     list-style: none;
     padding: 0.5rem 0;
-    margin: 0.5rem 0 0 0;
+    margin: 0;
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
     transition: all 0.3s ease;
     z-index: 1000;
     border: 1px solid var(--border-color);
+    pointer-events: none;
 }
 
-.main-nav .dropdown:hover .dropdown-menu {
+.main-nav .dropdown:hover .dropdown-menu,
+.main-nav .dropdown-menu:hover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Keep dropdown visible when hovering over the menu items */
+.main-nav .dropdown-menu:hover {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
