@@ -139,6 +139,11 @@ function setActiveNavigation(path, isClassesPage) {
         } else if (path.includes(href) && href !== '/') {
             link.classList.add('active');
         }
+        
+        // Also check if this is a class page link
+        if (isClassesPage && path.includes(href) && href.includes('/classes/')) {
+            link.classList.add('active');
+        }
     });
 }
 
@@ -164,8 +169,24 @@ function initMobileMenu() {
 
         nav.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', function() {
-                nav.classList.remove('active');
-                toggle.textContent = '☰';
+                // Don't close menu if clicking on dropdown parent
+                if (!link.parentElement.classList.contains('dropdown')) {
+                    nav.classList.remove('active');
+                    toggle.textContent = '☰';
+                }
+            });
+        });
+        
+        // Handle dropdown toggle on mobile
+        const dropdownLinks = nav.querySelectorAll('.dropdown > a.has-dropdown');
+        dropdownLinks.forEach(dropdownLink => {
+            dropdownLink.addEventListener('click', function(e) {
+                // Only prevent default on mobile
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    const dropdown = dropdownLink.parentElement;
+                    dropdown.classList.toggle('active');
+                }
             });
         });
 
@@ -173,6 +194,10 @@ function initMobileMenu() {
             if (!nav.contains(event.target) && !toggle.contains(event.target)) {
                 nav.classList.remove('active');
                 toggle.textContent = '☰';
+                // Close all dropdowns
+                nav.querySelectorAll('.dropdown').forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
             }
         });
     }
@@ -194,7 +219,21 @@ function getDefaultHeader() {
                     <ul class="main-nav">
                         <li><a href="/">Home</a></li>
                         <li><a href="/about.html">About Us</a></li>
-                        <li><a href="/classes.html" class="has-dropdown">Dance Classes</a></li>
+                        <li class="dropdown">
+                            <a href="/classes.html" class="has-dropdown">Dance Classes</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/classes/hip-hop.html">Hip Hop</a></li>
+                                <li><a href="/classes/ballet.html">Ballet</a></li>
+                                <li><a href="/classes/jazz.html">Jazz</a></li>
+                                <li><a href="/classes/tap.html">Tap</a></li>
+                                <li><a href="/classes/pointe.html">Pointe</a></li>
+                                <li><a href="/classes/lyrical.html">Lyrical</a></li>
+                                <li><a href="/classes/acro.html">Acro</a></li>
+                                <li><a href="/classes/creative-dance.html">Creative Dance</a></li>
+                                <li><a href="/classes/musical-theatre.html">Musical Theatre</a></li>
+                                <li><a href="/classes/adult-classes.html">Adult Classes</a></li>
+                            </ul>
+                        </li>
                         <li><a href="/schedule.html">Schedule</a></li>
                         <li><a href="/gallery.html">Gallery</a></li>
                         <li><a href="/contact.html">Contact Us</a></li>

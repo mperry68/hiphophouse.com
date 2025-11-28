@@ -180,6 +180,67 @@ body {
     background: none;
 }
 
+/* Dropdown Menu */
+.main-nav .dropdown {
+    position: relative;
+}
+
+.main-nav .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: var(--bg-white);
+    min-width: 200px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    list-style: none;
+    padding: 0.5rem 0;
+    margin: 0.5rem 0 0 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    border: 1px solid var(--border-color);
+}
+
+.main-nav .dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.main-nav .dropdown-menu li {
+    margin: 0;
+}
+
+.main-nav .dropdown-menu a {
+    display: block;
+    padding: 0.75rem 1.5rem;
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 400;
+    font-size: 0.9rem;
+    transition: var(--transition);
+    border-bottom: none;
+}
+
+.main-nav .dropdown-menu a::after {
+    display: none;
+}
+
+.main-nav .dropdown-menu a:hover {
+    background-color: var(--bg-light);
+    color: var(--secondary-color);
+    padding-left: 2rem;
+}
+
+.main-nav .dropdown-menu a.active {
+    background-color: var(--bg-light);
+    color: var(--secondary-color);
+    font-weight: 500;
+}
+
 /* Mobile Menu Toggle */
 .mobile-menu-toggle {
     display: none;
@@ -356,6 +417,38 @@ h3 {
 
     .main-nav.active {
         transform: translateX(0);
+    }
+    
+    /* Mobile dropdown menu */
+    .main-nav .dropdown {
+        position: static;
+    }
+    
+    .main-nav .dropdown-menu {
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        box-shadow: none;
+        border: none;
+        background-color: var(--bg-light);
+        margin: 0.5rem 0 0 1rem;
+        padding: 0.5rem 0;
+        border-left: 2px solid var(--secondary-color);
+        display: none;
+    }
+    
+    .main-nav .dropdown.active .dropdown-menu {
+        display: block;
+    }
+    
+    .main-nav .dropdown-menu a {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .main-nav .dropdown-menu a:hover {
+        padding-left: 1.5rem;
     }
 
     .header-container {
