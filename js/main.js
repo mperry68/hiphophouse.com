@@ -1,8 +1,24 @@
 // Main JavaScript for HipHopHouse.com
+// Version: 2.0 - Debug enabled
 
-console.log('=== MAIN.JS LOADED ===');
+// Immediate log to verify script is loading
+console.log('%c=== MAIN.JS LOADED ===', 'color: green; font-weight: bold; font-size: 14px;');
 console.log('Current URL:', window.location.href);
 console.log('Current Path:', window.location.pathname);
+console.log('Script loaded at:', new Date().toISOString());
+
+// Check if DOM is already loaded
+if (document.readyState === 'loading') {
+    console.log('DOM is still loading, waiting for DOMContentLoaded...');
+} else {
+    console.log('DOM already loaded, running immediately...');
+    // DOM is already loaded, run immediately
+    loadHeader();
+    loadFooter();
+    initMobileMenu();
+    checkPageHeaderImages();
+    checkAnnouncementBar();
+}
 
 // Load header and footer components
 document.addEventListener('DOMContentLoaded', function() {
@@ -227,7 +243,7 @@ function checkPageHeaderImages() {
         const inlineStyle = header.getAttribute('style');
         console.log('Inline style attribute:', inlineStyle || 'NONE');
         
-        // Check computed styles
+        // Check computed styles BEFORE any changes
         const computed = window.getComputedStyle(header);
         const bgImage = computed.backgroundImage;
         const bgSize = computed.backgroundSize;
@@ -242,29 +258,29 @@ function checkPageHeaderImages() {
         console.log('Computed background-color:', bgColor);
         console.log('Has background image:', bgImage !== 'none' && bgImage !== '');
         
-        // If inline style has background-image, extract URL
+        // If inline style has background-image, extract URL and ensure it's applied
         if (inlineStyle && inlineStyle.includes('background-image')) {
             const urlMatch = inlineStyle.match(/url\(['"]?([^'"]+)['"]?\)/);
             if (urlMatch) {
                 const imageUrl = urlMatch[1];
                 console.log('✅ Found image URL in inline style:', imageUrl);
                 
-                // Check if image is actually applied
-                if (bgImage.includes(imageUrl) || (bgImage !== 'none' && bgImage !== '')) {
-                    console.log('✅ Background image IS applied');
+                // Always ensure the background image is properly set via JavaScript
+                // This fixes cases where CSS might not apply the inline style correctly
+                header.style.setProperty('background-image', `url(${imageUrl})`, 'important');
+                header.style.setProperty('background-size', 'cover', 'important');
+                header.style.setProperty('background-position', 'center', 'important');
+                header.style.setProperty('background-repeat', 'no-repeat', 'important');
+                
+                // Check again after applying
+                const newComputed = window.getComputedStyle(header);
+                const newBgImage = newComputed.backgroundImage;
+                console.log('After JS application - background-image:', newBgImage);
+                
+                if (newBgImage !== 'none' && newBgImage !== '') {
+                    console.log('✅ Background image successfully applied via JavaScript');
                 } else {
-                    console.error('❌ Background image NOT applied! Computed:', bgImage);
-                    console.log('Attempting to force apply...');
-                    
-                    // Force apply
-                    header.style.backgroundImage = `url(${imageUrl})`;
-                    header.style.backgroundSize = 'cover';
-                    header.style.backgroundPosition = 'center';
-                    header.style.backgroundRepeat = 'no-repeat';
-                    
-                    // Check again
-                    const newComputed = window.getComputedStyle(header);
-                    console.log('After force - background-image:', newComputed.backgroundImage);
+                    console.error('❌ Background image STILL not applied after JS fix!');
                 }
             }
         } else {
