@@ -5,7 +5,34 @@ document.addEventListener('DOMContentLoaded', function() {
     loadHeader();
     loadFooter();
     initMobileMenu();
+    checkPageHeaderImages();
 });
+
+// Debug function to check page header background images
+function checkPageHeaderImages() {
+    const pageHeaders = document.querySelectorAll('.page-header');
+    pageHeaders.forEach((header, index) => {
+        const bgImage = window.getComputedStyle(header).backgroundImage;
+        const inlineStyle = header.getAttribute('style');
+        console.log(`Page Header ${index}:`, {
+            computedBackgroundImage: bgImage,
+            inlineStyle: inlineStyle,
+            hasBackgroundImage: bgImage !== 'none' && bgImage !== '',
+            element: header
+        });
+        
+        // If inline style exists but computed style doesn't show it, force it
+        if (inlineStyle && inlineStyle.includes('background-image') && (bgImage === 'none' || bgImage === '')) {
+            console.warn('Background image not applied, attempting to fix:', header);
+            // Extract the URL from inline style
+            const urlMatch = inlineStyle.match(/url\(['"]?([^'"]+)['"]?\)/);
+            if (urlMatch) {
+                header.style.setProperty('background-image', `url(${urlMatch[1]})`, 'important');
+                console.log('Fixed background image:', urlMatch[1]);
+            }
+        }
+    });
+}
 
 // Load header component
 function loadHeader() {
