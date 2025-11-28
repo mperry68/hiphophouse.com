@@ -239,9 +239,40 @@ function checkPageHeaderImages() {
     pageHeaders.forEach((header, index) => {
         console.log(`\n--- Page Header ${index + 1} ---`);
         
-        // Check inline style
+        // Check inline style - read from outerHTML to get original
         const inlineStyle = header.getAttribute('style');
-        console.log('Inline style attribute:', inlineStyle || 'NONE');
+        console.log('Inline style attribute (current):', inlineStyle || 'NONE');
+        
+        // Also check outerHTML to see original HTML
+        const outerHTML = header.outerHTML;
+        const htmlMatch = outerHTML.match(/style="([^"]*)"/);
+        if (htmlMatch) {
+            console.log('Original HTML style attribute:', htmlMatch[1]);
+        }
+        
+        // Try to extract image URL - check data attribute first (most reliable)
+        let imageUrl = header.getAttribute('data-bg-image');
+        if (imageUrl) {
+            console.log('✅ Found image URL in data-bg-image attribute:', imageUrl);
+        } else {
+            // Try inline style
+            if (inlineStyle && inlineStyle.includes('background-image')) {
+                const urlMatch = inlineStyle.match(/url\(['"]?([^'"]+)['"]?\)/);
+                if (urlMatch) {
+                    imageUrl = urlMatch[1];
+                    console.log('✅ Found image URL in inline style:', imageUrl);
+                }
+            }
+            
+            // If not found in current style, check outerHTML
+            if (!imageUrl && htmlMatch) {
+                const urlMatch = htmlMatch[1].match(/url\(['"]?([^'"]+)['"]?\)/);
+                if (urlMatch) {
+                    imageUrl = urlMatch[1];
+                    console.log('✅ Found image URL in original HTML:', imageUrl);
+                }
+            }
+        }
         
         // Check computed styles BEFORE any changes
         const computed = window.getComputedStyle(header);
@@ -258,33 +289,31 @@ function checkPageHeaderImages() {
         console.log('Computed background-color:', bgColor);
         console.log('Has background image:', bgImage !== 'none' && bgImage !== '');
         
-        // If inline style has background-image, extract URL and ensure it's applied
-        if (inlineStyle && inlineStyle.includes('background-image')) {
-            const urlMatch = inlineStyle.match(/url\(['"]?([^'"]+)['"]?\)/);
-            if (urlMatch) {
-                const imageUrl = urlMatch[1];
-                console.log('✅ Found image URL in inline style:', imageUrl);
-                
-                // Always ensure the background image is properly set via JavaScript
-                // This fixes cases where CSS might not apply the inline style correctly
-                header.style.setProperty('background-image', `url(${imageUrl})`, 'important');
-                header.style.setProperty('background-size', 'cover', 'important');
-                header.style.setProperty('background-position', 'center', 'important');
-                header.style.setProperty('background-repeat', 'no-repeat', 'important');
-                
-                // Check again after applying
-                const newComputed = window.getComputedStyle(header);
-                const newBgImage = newComputed.backgroundImage;
-                console.log('After JS application - background-image:', newBgImage);
-                
-                if (newBgImage !== 'none' && newBgImage !== '') {
-                    console.log('✅ Background image successfully applied via JavaScript');
-                } else {
-                    console.error('❌ Background image STILL not applied after JS fix!');
-                }
+        // If we found an image URL, always apply it
+        if (imageUrl) {
+            console.log('✅ Found image URL:', imageUrl);
+            console.log('Applying background image via JavaScript...');
+            
+            // Always ensure the background image is properly set via JavaScript
+            // This fixes cases where CSS might not apply the inline style correctly
+            header.style.setProperty('background-image', `url(${imageUrl})`, 'important');
+            header.style.setProperty('background-size', 'cover', 'important');
+            header.style.setProperty('background-position', 'center', 'important');
+            header.style.setProperty('background-repeat', 'no-repeat', 'important');
+            header.style.setProperty('background-color', 'transparent', 'important');
+            
+            // Check again after applying
+            const newComputed = window.getComputedStyle(header);
+            const newBgImage = newComputed.backgroundImage;
+            console.log('After JS application - background-image:', newBgImage);
+            
+            if (newBgImage !== 'none' && newBgImage !== '') {
+                console.log('✅ Background image successfully applied via JavaScript');
+            } else {
+                console.error('❌ Background image STILL not applied after JS fix!');
             }
         } else {
-            console.warn('⚠️ No background-image in inline style');
+            console.warn('⚠️ No background-image URL found in inline style or HTML');
         }
         
         // Check element visibility
