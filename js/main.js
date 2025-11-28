@@ -407,14 +407,6 @@ function getDefaultFooter() {
                         </ul>
                     </div>
                     <div class="footer-section">
-                        <h3>Connect With Us</h3>
-                        <div class="social-links">
-                            <a href="#" aria-label="Facebook">FB</a>
-                            <a href="#" aria-label="Instagram">IG</a>
-                            <a href="#" aria-label="YouTube">YT</a>
-                        </div>
-                    </div>
-                    <div class="footer-section">
                         <h3>Contact Info</h3>
                         <p><strong>Address:</strong><br>
                         B2-186 Pl. Sutton<br>
