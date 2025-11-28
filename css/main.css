@@ -334,6 +334,7 @@ h3 {
         border-top: 1px solid var(--border-color);
         max-height: calc(100vh - var(--header-height) - var(--announcement-height));
         overflow-y: auto;
+        z-index: 9999;
     }
     
     .main-nav a {
@@ -363,8 +364,9 @@ h3 {
     
     /* Hero Section Mobile */
     .hero-section {
-        min-height: 400px;
+        min-height: 350px;
         margin-bottom: 2rem;
+        margin-top: calc(var(--header-height) + var(--announcement-height));
     }
     
     .hero-content {
@@ -451,7 +453,9 @@ h3 {
     /* Page Header Mobile */
     .page-header {
         padding: 3rem 0;
+        padding-top: calc(var(--header-height) + var(--announcement-height) + 3rem);
         margin-bottom: 2rem;
+        min-height: 400px;
     }
     
     .page-header h1 {
@@ -461,6 +465,11 @@ h3 {
     
     .page-header p {
         font-size: 1rem;
+    }
+    
+    .page-header .breadcrumbs {
+        font-size: 0.85rem;
+        padding: 0.5rem 0;
     }
     
     /* Features Grid Mobile */
@@ -505,8 +514,10 @@ h3 {
     background: linear-gradient(135deg, rgba(44, 44, 44, 0.8), rgba(44, 44, 44, 0.6)), var(--bg-light);
     background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
     color: var(--bg-white);
     margin-bottom: 4rem;
+    margin-top: calc(var(--header-height) + var(--announcement-height));
 }
 
 .hero-content {
@@ -863,7 +874,7 @@ h3 {
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: scroll;
-    min-height: 400px;
+    min-height: 550px;
     display: flex;
     align-items: center;
     width: 100%;
@@ -943,8 +954,9 @@ h3 {
     
     /* Hero Section Small Mobile */
     .hero-section {
-        min-height: 350px;
+        min-height: 300px;
         margin-bottom: 1.5rem;
+        margin-top: calc(var(--header-height) + var(--announcement-height));
     }
     
     .hero-content {
@@ -970,8 +982,10 @@ h3 {
     
     /* Page Header Small Mobile */
     .page-header {
-        padding: 2.5rem 0;
+        padding: 2rem 0;
+        padding-top: calc(var(--header-height) + var(--announcement-height) + 2rem);
         margin-bottom: 1.5rem;
+        min-height: 350px;
     }
     
     .page-header h1 {
@@ -981,6 +995,11 @@ h3 {
     
     .page-header p {
         font-size: 0.95rem;
+    }
+    
+    .page-header .breadcrumbs {
+        font-size: 0.8rem;
+        padding: 0.4rem 0;
     }
     
     /* Section Titles Small Mobile */
